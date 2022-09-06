@@ -30,7 +30,8 @@ public class GetUserQueryHandler : IRequestHandler<GetUserQuery, OneOf<UserDto, 
         {
             Email = user.Email.Email,
             Id = user.Id,
-            Name = user.Name
+            Name = user.Name,
+            Balance = user.Balance.GetUnits()
         };
     }
 }

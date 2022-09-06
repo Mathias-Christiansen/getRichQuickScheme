@@ -23,6 +23,16 @@ public class Money : ValueObject
         return valueObj;
     }
 
+    internal static Money CreateLong(long subUnit)
+    {
+        var valueObj = new Money()
+        {
+            SubUnit = subUnit,
+        };
+        valueObj.Validate();
+        return valueObj;
+    }
+
     public decimal GetUnits()
     {
         return decimal.Round(Convert.ToDecimal(SubUnit) / 100, 2);
@@ -38,9 +48,9 @@ public class Money : ValueObject
         return GetUnits() + " dkk";
     }
 
-    public void Combine(Money other)
+    public Money Combine(Money other)
     {
-        SubUnit += other.SubUnit;
+        return Money.CreateLong(SubUnit + other.SubUnit);
     }
 }
 
@@ -48,6 +58,6 @@ public class MoneyValidator : AbstractValidator<Money>
 {
     public MoneyValidator()
     {
-        RuleFor(x => x.SubUnit).InclusiveBetween(-10000, 10000);
+        RuleFor(x => x.SubUnit).InclusiveBetween(-1_000_000_000, 1_000_000_000);
     }
 }

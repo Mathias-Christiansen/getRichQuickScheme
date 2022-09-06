@@ -58,7 +58,7 @@ public class User : Entity
         }
 
         var transaction = Transaction.Create(id, amount, type);
-        Balance.Combine(amount);
+        Balance = Balance.Combine(amount);
         _transactions.Add(transaction);
         return transaction;
     }
