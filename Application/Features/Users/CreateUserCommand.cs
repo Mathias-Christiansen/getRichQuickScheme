@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Application.Pipelines;
 using Contracts.Errors;
 using Domain.Entities;
 using Domain.ValueObj;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using OneOf;
 
 namespace Application.Features.Users;
-
+[Access(AccessLevels.NotLoggedIn)]
 public record CreateUserCommand(Guid Id, string Name, string Email, string Password) : IRequest<OneOf<Unit, UserEmailAlreadyExistsError>>;
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, OneOf<Unit, UserEmailAlreadyExistsError>>

@@ -8,6 +8,26 @@ public static class SwaggerConfiguration
     {
         services.AddSwaggerGen(options =>
         {
+            options.AddSecurityDefinition("basic", new OpenApiSecurityScheme()
+            {
+                Description = "Supply Bearer Token ¯\\_(ツ)_/¯",
+                Name = "Bearer",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer",
+                In = ParameterLocation.Header,
+                
+            });
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+            {
+                {new OpenApiSecurityScheme()
+                {
+                    Reference = new OpenApiReference()
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "basic",
+                    }
+                }, new List<string>()}
+            });
             options.SwaggerDoc("v1", new OpenApiInfo()
             {
                 Version = "v1",

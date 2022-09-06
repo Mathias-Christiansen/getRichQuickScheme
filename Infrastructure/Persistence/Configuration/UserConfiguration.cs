@@ -29,6 +29,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             b.HasIndex(x => x.Bearer).IsUnique();
         });
         builder.Navigation(x => x.Secret).IsRequired(false);
-
+        builder.ConfigureMoney(x => x.Balance);
+        builder.HasMany(x => x.Transactions).WithOne().IsRequired();
     }
 }

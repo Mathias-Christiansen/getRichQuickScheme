@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Security.Authentication;
 using System.Text.Json;
 using Contracts.Errors;
 using FluentValidation;
@@ -48,6 +49,26 @@ public static class StartupExtensions
                     .ToList();
                 var jsonE = JsonSerializer.Serialize(errors);
                 context.Response.StatusCode = (int)HttpStatusCode.UnprocessableEntity;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync(jsonE);
+
+            });
+        });
+    }
+    
+    public static void HandleAuthorizationException(this WebApplication app)
+    {
+        app.UseExceptionHandler(x =>
+        {
+            x.Run(async context =>
+            {
+                var exceptionHandler = context.Features.Get<IExceptionHandlerFeature>();
+                var exception = exceptionHandler?.Error;
+                if (exception is null) return;
+                if (exception is not AuthenticationException ve) throw exception;
+                var errors = (IError)new GenericError(ve.Message);
+                var jsonE = JsonSerializer.Serialize(errors);
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync(jsonE);
 

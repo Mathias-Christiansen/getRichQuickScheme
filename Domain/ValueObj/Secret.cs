@@ -18,26 +18,13 @@ public class Secret : ValueObject
     {
         var valueObj = new Secret()
         {
-            Bearer = GenerateBearerToken(),
+            Bearer = GenerateRandomText.Generate(4096),
             CreatedAt = DateTime.Now
         };
         valueObj.Validate();
         return valueObj;
     }
     
-    private static string GenerateBearerToken()
-    {
-        const string chars = "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!#¤%&/()=_-";
-        var random = new Random();
-        var builder = new StringBuilder();
-        foreach (var c in Enumerable.Range(0,4096).Select(_ => random.Next(0, chars.Length)).Select(x => chars[x]))
-        {
-            builder.Append(c);
-        }
-
-        return builder.ToString();
-    }
-
     public bool Compare(string bearer)
     {
         if (DateTime.Now.Subtract(CreatedAt) > TimeSpan.FromHours(1))

@@ -1,4 +1,5 @@
-﻿using Contracts.Errors;
+﻿using Application.Pipelines;
+using Contracts.Errors;
 using Contracts.Users;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using OneOf;
 
 namespace Application.Features.Users;
 
+[Access(AccessLevels.LoggedIn)]
 public record GetUserQuery(Guid UserId): IRequest<OneOf<UserDto, UserNotFound>>;
 
 public class GetUserQueryHandler : IRequestHandler<GetUserQuery, OneOf<UserDto, UserNotFound>>

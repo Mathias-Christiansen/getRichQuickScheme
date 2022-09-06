@@ -16,7 +16,7 @@ public class Password : ValueObject
 
     public static Password Create(string password)
     {
-        var salt = GenerateSalt();
+        var salt = GenerateRandomText.Generate(32);
         var valueObj = new Password()
         {
             Salt = salt,
@@ -31,20 +31,7 @@ public class Password : ValueObject
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(password + salt));
         return Encoding.UTF8.GetString(bytes);
     }
-
-    private static string GenerateSalt()
-    {
-        const string chars = "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!#¤%&/()=_-";
-        var random = new Random();
-        var builder = new StringBuilder();
-        foreach (var c in Enumerable.Range(0,32).Select(_ => random.Next(0, chars.Length)).Select(x => chars[x]))
-        {
-            builder.Append(c);
-        }
-
-        return builder.ToString();
-    }
-
+    
     public bool Compare(Password? pas1)
     {
         if (pas1 is null)

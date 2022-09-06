@@ -1,10 +1,12 @@
-﻿using Contracts.Errors;
+﻿using Application.Pipelines;
+using Contracts.Errors;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 
 namespace Application.Features.Users;
 
+[Access(AccessLevels.NotLoggedIn)]
 public record UserLoginCommand(string Email, string Password) : IRequest<OneOf<string, UserNotFound, IncorrectPasswordError>>;
 
 public class UserLoginCommandHandler : IRequestHandler<UserLoginCommand, OneOf<string, UserNotFound, IncorrectPasswordError>>

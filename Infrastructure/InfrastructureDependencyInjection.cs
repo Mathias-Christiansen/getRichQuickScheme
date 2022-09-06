@@ -1,6 +1,9 @@
 ﻿using System.Reflection;
 using Application;
+using Application.Services;
 using Infrastructure.Persistence;
+using Infrastructure.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +23,13 @@ public static class InfrastructureDependencyInjection
             });
         });
         services.AddScoped<IAppDbContext>(x => x.GetRequiredService<AppDbContext>());
+        AddServices(services);
         return services;
+    }
+
+    private static void AddServices(IServiceCollection services)
+    {
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddScoped<IAuthService, AuthorizationService>();
     }
 }

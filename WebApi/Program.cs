@@ -13,6 +13,7 @@ app.ConfigureSwag();
 app.UseHttpsRedirection();
 app.UseRouting();
 app.HandleFluentValidationException();
+app.HandleAuthorizationException();
 app.UseEndpoints(x => x.MapControllers());
 await app.RunMigrations();
 await app.RunAsync();
