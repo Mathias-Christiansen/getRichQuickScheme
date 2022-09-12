@@ -1,6 +1,6 @@
 ﻿namespace Domain.GamblingMachines;
 
-public abstract class AbstractSlotMachine<TSlotTile>
+public abstract class AbstractSlotMachine<TSlotTile> : ISlotMachine
     where TSlotTile : struct, Enum
 {
 
@@ -26,4 +26,13 @@ public abstract class AbstractSlotMachine<TSlotTile>
     protected abstract TSlotTile[] GenerateColumn(int columnNumber);
 
     protected abstract void EvaluateSpin(SlotMachineResult<TSlotTile> spin);
+    public bool IsTileSet<TTileSet>() where TTileSet : struct, Enum
+    {
+        return typeof(TTileSet) == typeof(TSlotTile);
+    }
+
+    public Type GetTileSetType()
+    {
+        return typeof(TSlotTile);
+    }
 }

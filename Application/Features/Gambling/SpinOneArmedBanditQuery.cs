@@ -10,51 +10,35 @@ using OneOf;
 
 namespace Application.Features.Gambling;
 [Access(AccessLevels.LoggedIn)]
-public record SpinOneArmedBanditQuery(decimal Amount) : IRequest<OneOf<SpinResultsDto<SlotCardTilesDto>, UserNotFound, InsufficientFundsError>>;
+public record SpinOneArmedBanditQuery(decimal Amount) : IRequest<OneOf<SpinResultsDto<SlotCardTilesDto>, UserNotFound, InsufficientFundsError, GamblingMachineNotFound>>;
 
 public class SpinOneArmedBanditQueryHandler : IRequestHandler<SpinOneArmedBanditQuery,
-    OneOf<SpinResultsDto<SlotCardTilesDto>, UserNotFound, InsufficientFundsError>>
+    OneOf<SpinResultsDto<SlotCardTilesDto>, UserNotFound, InsufficientFundsError, GamblingMachineNotFound>>
 {
     private readonly IAuthService _authService;
     private readonly IAppDbContext _dbContext;
+    private readonly IGamblingRepository _gamblingRepository;
 
-    public SpinOneArmedBanditQueryHandler(IAuthService authService, IAppDbContext dbContext)
+    public SpinOneArmedBanditQueryHandler(IAuthService authService, IAppDbContext dbContext, IGamblingRepository gamblingRepository)
     {
         _authService = authService;
         _dbContext = dbContext;
+        _gamblingRepository = gamblingRepository;
     }
 
-    public async Task<OneOf<SpinResultsDto<SlotCardTilesDto>, UserNotFound, InsufficientFundsError>> Handle(SpinOneArmedBanditQuery request, CancellationToken cancellationToken)
+    public async Task<OneOf<SpinResultsDto<SlotCardTilesDto>, UserNotFound, InsufficientFundsError, GamblingMachineNotFound>> Handle(SpinOneArmedBanditQuery request, CancellationToken cancellationToken)
     {
         var user = await _authService.GetCurrentUser(cancellationToken);
         if (user is null) return new UserNotFound();
         _dbContext.Users.Attach(user);
-        
-        if (user.Balance.GetUnits() < request.Amount) return new InsufficientFundsError(request.Amount,user.Balance.GetUnits());
-        
-        var machine = new OneArmedBanditSlotMachine();
-        var result = machine.Spin();
-        var totalMultiplier = (decimal)result.SumMultiplier();
-        
-        var totalResult = request.Amount * totalMultiplier;
-        var resultMoney = Money.Create(totalResult - request.Amount);
-        
-        var transactionResult = user.AddTransaction(Guid.NewGuid(), resultMoney, TransactionType.Spin);
-        
-        if(transactionResult.IsT1) return new InsufficientFundsError(request.Amount,user.Balance.GetUnits());
-        var transaction = transactionResult.AsT0;
-        
-        _dbContext.Set<Transaction>().Add(transaction);
-        _dbContext.Users.Update(user);
-        await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return new SpinResultsDto<SlotCardTilesDto>()
-        {
-            Multipliers = result.GetMultipliers().Select(x => new MultiplierAndOriginDto(x.Multiplier, x.Path))
-                .ToArray(),
-            NewBalance = user.Balance.GetUnits(),
-            TotalWon = totalResult,
-            Grid = result.Select(x => x.Select(y => (SlotCardTilesDto)y).ToArray()).ToArray()
-        };
+        var result = await _gamblingRepository
+            .Gamble<SlotCardTiles, SlotCardTilesDto>(request.Amount, user, cancellationToken);
+        return result
+            .Match<OneOf<SpinResultsDto<SlotCardTilesDto>, UserNotFound, InsufficientFundsError, GamblingMachineNotFound>>(
+                x => x, 
+                x => x, 
+                x=> x
+            );
     }
 }

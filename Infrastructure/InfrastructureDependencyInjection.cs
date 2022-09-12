@@ -31,5 +31,7 @@ public static class InfrastructureDependencyInjection
     {
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped<IAuthService, AuthorizationService>();
+        services.AddSingleton<IGamblingMachineService, GamblingMachineService>();
+        services.AddScoped<IGamblingRepository, GamblingRepository>();
     }
 }
