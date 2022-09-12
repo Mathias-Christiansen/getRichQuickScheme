@@ -2,6 +2,7 @@
 using System.Security.Authentication;
 using System.Text.Json;
 using Contracts.Errors;
+using Contracts.Errors.Interfaces;
 using FluentValidation;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Diagnostics;

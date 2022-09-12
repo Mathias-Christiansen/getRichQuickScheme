@@ -2,6 +2,7 @@
 using Contracts.Users;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Properties;
 
 namespace WebApi.Controllers;
 
@@ -17,30 +18,31 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("")]
+    [MapResponses(typeof(CreateUserCommand))]
     public async Task<IActionResult> CreateUser(CreateUserRequest request)
     {
         var id = Guid.NewGuid();
         var command = new CreateUserCommand(id, request.Name, request.Email, request.Password);
         var response = await _mediator.Send(command);
-        return response.Match<IActionResult>(
-            x => Accepted(), NotFound);
+        return response.MatchResponse();
     }
     
     [HttpGet("{id:guid}")]
+    [MapResponses(typeof(GetUserQuery))]
     public async Task<IActionResult> GetUser(Guid id)
     {
         var query = new GetUserQuery(id);
         var response = await _mediator.Send(query);
-        return response.Match<IActionResult>(
-            Ok, NotFound);
+        return response.MatchResponse();
+
     }
     
     [HttpPost("login")]
+    [MapResponses(typeof(UserLoginCommand))]
     public async Task<IActionResult> UserLogin(UserLoginRequest request)
     {
         var command = new UserLoginCommand(request.Email, request.Password);
         var response = await _mediator.Send(command);
-        return response.Match<IActionResult>(
-            Ok, NotFound, Unauthorized);
+        return response.MatchResponse();
     }
 }

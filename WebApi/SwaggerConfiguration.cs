@@ -1,4 +1,7 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.OpenApi.Models;
+using WebApi.Properties;
 
 namespace WebApi;
 
@@ -6,6 +9,7 @@ public static class SwaggerConfiguration
 {
     public static IServiceCollection AddSwagger(this IServiceCollection services)
     {
+        services.AddTransient<IApplicationModelProvider, SwaggerMapResponseTypeGenerator>();
         services.AddSwaggerGen(options =>
         {
             options.AddSecurityDefinition("basic", new OpenApiSecurityScheme()

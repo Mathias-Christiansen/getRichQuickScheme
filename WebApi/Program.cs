@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using WebApi;
 
 var builder = WebApplication.CreateBuilder(args);

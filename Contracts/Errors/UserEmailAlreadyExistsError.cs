@@ -1,6 +1,8 @@
-﻿namespace Contracts.Errors;
+﻿using Contracts.Errors.Interfaces;
 
-public record UserEmailAlreadyExistsError(string Email) : IError
+namespace Contracts.Errors;
+
+public record UserEmailAlreadyExistsError(string Email) : IAlreadyExistsError
 {
     public string? Message => $"User Email '{Email}' Already Registered";
 }

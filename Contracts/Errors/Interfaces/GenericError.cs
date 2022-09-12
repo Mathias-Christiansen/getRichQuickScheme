@@ -1,4 +1,4 @@
-﻿namespace Contracts.Errors;
+﻿namespace Contracts.Errors.Interfaces;
 
 public record GenericError(string ErrorMessage) : IError
 {

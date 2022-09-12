@@ -1,7 +1,9 @@
 ﻿using Application.Features.Transactions;
+using Application.Features.Users;
 using Contracts.Transactions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Properties;
 
 namespace WebApi.Controllers;
 
@@ -18,21 +20,22 @@ public class TransactionController : ControllerBase
     }
     
     [HttpPost("")]
+    [MapResponses(typeof(TransferFundsCommand))]
     public async Task<IActionResult> CreateMoneyTransfer(TransferRequest request)
     {
         var id = Guid.NewGuid();
         var command = new TransferFundsCommand(id, request.Amount);
         var response = await _mediator.Send(command);
-        return response.Match<IActionResult>(
-            x => Accepted(), NotFound, BadRequest);
+        return response.MatchResponse();
+
     }
     
     [HttpGet("page/{page:int}")]
+    [MapResponses(typeof(GetUserTransactionsPageQuery))]
     public async Task<IActionResult> GetUserTransactions(int page)
     {
         var query = new GetUserTransactionsPageQuery(page);
         var response = await _mediator.Send(query);
-        return response.Match<IActionResult>(
-            Ok, NotFound);
+        return response.MatchResponse();
     }
 }

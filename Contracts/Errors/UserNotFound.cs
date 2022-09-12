@@ -1,6 +1,8 @@
-﻿namespace Contracts.Errors;
+﻿using Contracts.Errors.Interfaces;
 
-public record UserNotFound() : IError
+namespace Contracts.Errors;
+
+public record UserNotFound() : INotFoundError
 {
     public string? Message => "User could not be found";
 }

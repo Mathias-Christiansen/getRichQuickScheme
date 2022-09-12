@@ -1,6 +1,8 @@
-﻿namespace Contracts.Errors;
+﻿using Contracts.Errors.Interfaces;
 
-public record IncorrectPasswordError() : IError
+namespace Contracts.Errors;
+
+public record IncorrectPasswordError() : IValidationError
 {
     public string? Message => "The password is incorrect";
 }
