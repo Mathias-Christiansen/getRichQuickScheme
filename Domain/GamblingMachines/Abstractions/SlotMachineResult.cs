@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Domain.GamblingMachines;
+namespace Domain.GamblingMachines.Abstractions;
 
 public class SlotMachineResult<TSlotTile> : IReadOnlyList<TSlotTile[]>
     where TSlotTile : struct, Enum

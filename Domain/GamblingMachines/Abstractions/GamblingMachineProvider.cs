@@ -1,4 +1,4 @@
-﻿namespace Domain.GamblingMachines;
+﻿namespace Domain.GamblingMachines.Abstractions;
 
 public static class GamblingMachineProvider
 {

@@ -25,4 +25,14 @@ public class GamblingController : ControllerBase
         var response = await _mediator.Send(query);
         return response.MatchResponse();
     }
+    
+    
+    [HttpGet("ThreeArmedBandit/{amount:decimal}")]
+    [MapResponses(typeof(SpinThreeArmedBanditQuery))]
+    public async Task<IActionResult> ThreeArmedBandit(decimal amount)
+    {
+        var query = new SpinThreeArmedBanditQuery(amount);
+        var response = await _mediator.Send(query);
+        return response.MatchResponse();
+    }
 }

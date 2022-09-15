@@ -1,4 +1,4 @@
-﻿namespace Domain.GamblingMachines;
+﻿namespace Domain.GamblingMachines.Abstractions;
 
 public abstract class AbstractSlotMachine<TSlotTile> : ISlotMachine
     where TSlotTile : struct, Enum

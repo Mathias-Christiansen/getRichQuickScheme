@@ -1,5 +1,6 @@
 ﻿using Application.Services;
 using Domain.GamblingMachines;
+using Domain.GamblingMachines.Abstractions;
 using OneOf;
 using OneOf.Types;
 
