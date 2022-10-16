@@ -1,6 +1,6 @@
-﻿namespace Domain.GamblingMachines.TileSets;
+﻿namespace Domain.GamblingMachines.ThreeLeggedBandit;
 
-public enum ThreeArmedBanditTileSet
+public enum ThreeLeggedBanditTileSet
 {
     Bonus = 0,
     Ace = 1,

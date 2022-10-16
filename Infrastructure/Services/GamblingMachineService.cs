@@ -16,7 +16,7 @@ public class GamblingMachineService : IGamblingMachineService
         return GamblingMachineProvider
             .GetSlotMachines()
             .ToDictionary(
-                k => k.GetTileSetType(), 
+                k => k.GetResultType(), 
                 v => v
                 );
     }

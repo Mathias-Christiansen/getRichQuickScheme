@@ -1,28 +1,29 @@
 ﻿using Domain.GamblingMachines.Abstractions;
-using Domain.GamblingMachines.TileSets;
 
-namespace Domain.GamblingMachines;
+namespace Domain.GamblingMachines.OneArmedBandit;
 
-public sealed class OneArmedBanditSlotMachine : AbstractSlotMachine<OneArmedBanditTileSet>
+public sealed class OneArmedBanditSlotMachine : AbstractSlotMachine<OneArmedBanditResult>
 {
+
+    private static readonly Random Rand = new();
 
     //3x3 slot machine
     private const int ColumnSize = 3;
 
     private readonly OneArmedBanditTileSet[] _tiles = Enum.GetValues<OneArmedBanditTileSet>(); 
     
-    protected override int GetWidth()
+    private static int GetWidth()
     {
         //this is 3x3 slot machine
         return 3;
     }
 
-    protected override OneArmedBanditTileSet[] GenerateColumn(int columnNumber)
+    private OneArmedBanditTileSet[] GenerateColumn()
     {
         var column = new OneArmedBanditTileSet[ColumnSize];
         for (var i = 0; i < ColumnSize; i++)
         {
-            var index = Random.Next(0, _tiles.Length);
+            var index = Rand.Next(0, _tiles.Length);
             var tile = _tiles[index];
             column[i] = tile;
         }
@@ -30,14 +31,27 @@ public sealed class OneArmedBanditSlotMachine : AbstractSlotMachine<OneArmedBand
         return column;
     }
 
-    protected override void EvaluateSpin(SlotMachineResult<OneArmedBanditTileSet> spin)
+    public override OneArmedBanditResult Spin()
+    {
+        var width = GetWidth();
+        var result = new OneArmedBanditResult(width);
+        while (true)
+        {
+            var column = GenerateColumn();
+            if (result.AddColumn(column) is false) break;
+        }
+        EvaluateSpin(result);
+        return result;
+    }
+
+    private void EvaluateSpin(OneArmedBanditResult spin)
     {
         var first = spin[0][1];
         var second = spin[1][1];
         var third = spin[2][1];
         var multiplier = CalcMultiplier(first, second, third);
         if (multiplier <= 0) return;
-        spin.AddMultiplier(new SlotMachineResult<OneArmedBanditTileSet>.MultiplierAndOrigin(multiplier, new []{1,1,1}));
+        spin.AddMultiplier(new OneArmedBanditResult.MultiplierAndOrigin(multiplier, new []{1,1,1}));
     }
 
     private float CalcMultiplier(OneArmedBanditTileSet s1, OneArmedBanditTileSet s2, OneArmedBanditTileSet s3)

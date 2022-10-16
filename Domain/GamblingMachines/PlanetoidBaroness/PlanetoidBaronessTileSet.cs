@@ -2,7 +2,8 @@
 
 public enum PlanetoidBaronessTileSet
 {
-    Wild = 0, //x5 100, x4 6. x3 2
+    Empty = 0,
+    Wild, //x5 100, x4 6. x3 2
     Love, //x5 20, x4 2, x3 0.6
     Star, //x5 20, x4 2, x3 0.6
     Storm, //x5 20, x4 2, x3 0.6

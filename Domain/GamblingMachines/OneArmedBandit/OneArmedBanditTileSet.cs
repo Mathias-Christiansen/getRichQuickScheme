@@ -1,4 +1,4 @@
-﻿namespace Domain.GamblingMachines.TileSets;
+﻿namespace Domain.GamblingMachines.OneArmedBandit;
 
 public enum OneArmedBanditTileSet
 {

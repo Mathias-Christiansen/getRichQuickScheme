@@ -4,6 +4,7 @@ using Contracts.Common;
 using Contracts.Common.TileSetsDto;
 using Contracts.Errors;
 using Domain.GamblingMachines;
+using Domain.GamblingMachines.ThreeLeggedBandit;
 using Domain.GamblingMachines.TileSets;
 using MediatR;
 using OneOf;
@@ -34,7 +35,7 @@ public class SpinThreeArmedBanditQueryHandler : IRequestHandler<SpinThreeArmedBa
         _dbContext.Users.Attach(user);
 
         var result = await _gamblingRepository
-            .Gamble<ThreeArmedBanditTileSet, ThreeArmedBanditTileSetDto>(request.Amount, user, cancellationToken);
+            .Gamble<ThreeLeggedBanditTileSet, ThreeArmedBanditTileSetDto>(request.Amount, user, cancellationToken);
         return result
             .Match<OneOf<SpinResultsDto<ThreeArmedBanditTileSetDto>, UserNotFound, InsufficientFundsError, GamblingMachineNotFound>>(
                 x => x, 

@@ -5,6 +5,7 @@ using Contracts.Common.TileSetsDto;
 using Contracts.Errors;
 using Domain.Entities;
 using Domain.GamblingMachines;
+using Domain.GamblingMachines.OneArmedBandit;
 using Domain.GamblingMachines.TileSets;
 using Domain.ValueObj;
 using MediatR;
