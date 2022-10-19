@@ -28,10 +28,19 @@ public class GamblingController : ControllerBase
     
     
     [HttpGet("ThreeArmedBandit/{amount:decimal}")]
-    [MapResponses(typeof(SpinThreeArmedBanditQuery))]
+    [MapResponses(typeof(SpinThreeLeggedBanditQuery))]
     public async Task<IActionResult> ThreeArmedBandit(decimal amount)
     {
-        var query = new SpinThreeArmedBanditQuery(amount);
+        var query = new SpinThreeLeggedBanditQuery(amount);
+        var response = await _mediator.Send(query);
+        return response.MatchResponse();
+    }
+    
+    [HttpGet("PlanetoidBaroness/{amount:decimal}")]
+    [MapResponses(typeof(SpinPlanetoidBaronessQuery))]
+    public async Task<IActionResult> PlanetoidBaroness(decimal amount)
+    {
+        var query = new SpinPlanetoidBaronessQuery(amount);
         var response = await _mediator.Send(query);
         return response.MatchResponse();
     }

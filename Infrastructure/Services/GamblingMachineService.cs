@@ -21,12 +21,12 @@ public class GamblingMachineService : IGamblingMachineService
                 );
     }
 
-    public OneOf<AbstractSlotMachine<TTileSet>, Error> GetSlotMachine<TTileSet>() where TTileSet : struct, Enum
+    public OneOf<AbstractSlotMachine<TResult>, Error> GetSlotMachine<TResult>() where TResult : IGamblingResult
     {
         _slotMachines ??= LoadSlotMachines(); //if _slotMachines is null load them
-        if (_slotMachines.TryGetValue(typeof(TTileSet), out var slotMachine))
+        if (_slotMachines.TryGetValue(typeof(TResult), out var slotMachine))
         {
-            return slotMachine is AbstractSlotMachine<TTileSet> sm ? sm : new Error();
+            return slotMachine is AbstractSlotMachine<TResult> sm ? sm : new Error();
         }
 
         return new Error();

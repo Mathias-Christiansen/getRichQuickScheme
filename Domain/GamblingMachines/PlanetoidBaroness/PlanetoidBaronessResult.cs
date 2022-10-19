@@ -35,4 +35,9 @@ public class PlanetoidBaronessResult : IGamblingResult, IReadOnlyCollection<Plan
     }
 
     public int Count => _states.Count;
+
+    public IEnumerable<float> GetMultipliers()
+    {
+        return _states.SelectMany(x => x.Multipliers);
+    }
 }

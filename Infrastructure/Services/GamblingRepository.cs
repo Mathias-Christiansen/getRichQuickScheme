@@ -3,6 +3,7 @@ using Application.Services;
 using Contracts.Common;
 using Contracts.Errors;
 using Domain.Entities;
+using Domain.GamblingMachines.Abstractions;
 using Domain.ValueObj;
 using OneOf;
 
@@ -19,19 +20,18 @@ public class GamblingRepository : IGamblingRepository
         _gmService = gmService;
     }
     
-    public async Task<OneOf<SpinResultsDto<TTileDto>, InsufficientFundsError, GamblingMachineNotFound>> 
-        Gamble<TTileSet, TTileDto>(decimal amount, User user, CancellationToken cancellationToken) 
-        where TTileSet : struct, Enum 
-        where TTileDto : struct, Enum
+
+    public async Task<OneOf<TResult, InsufficientFundsError, GamblingMachineNotFound>> 
+        Gamble<TResult>(decimal amount, User user, CancellationToken cancellationToken) where TResult : IGamblingResult
     {
         if (user.Balance.GetUnits() < amount) return new InsufficientFundsError(amount,user.Balance.GetUnits());
         
-        var machineLookUp = _gmService.GetSlotMachine<TTileSet>();
+        var machineLookUp = _gmService.GetSlotMachine<TResult>();
         if (machineLookUp.IsT1) return new GamblingMachineNotFound();
         var machine = machineLookUp.AsT0;
             
         var result = machine.Spin();
-        var totalMultiplier = (decimal)result.SumMultiplier();
+        var totalMultiplier = (decimal)result.TotalMultiplier();
         
         var totalResult = amount * totalMultiplier;
         var resultMoney = Money.Create(totalResult - amount);
@@ -45,15 +45,6 @@ public class GamblingRepository : IGamblingRepository
         _dbContext.Users.Update(user);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return new SpinResultsDto<TTileDto>()
-        {
-            Multipliers = result.GetMultipliers().Select(x => new MultiplierAndOriginDto(x.Multiplier, x.Path))
-                .ToArray(),
-            NewBalance = user.Balance.GetUnits(),
-            TotalWon = totalResult,
-            Grid = result.Select(x => x.Select(y => (TTileDto)(object)y).ToArray()).ToArray()
-        };
+        return result;
     }
-
-
 }

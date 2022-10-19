@@ -7,6 +7,5 @@ namespace Application.Services;
 
 public interface IGamblingMachineService
 {
-    public OneOf<AbstractSlotMachine<TTileSet>, Error> GetSlotMachine<TTileSet>()
-        where TTileSet : struct, Enum;
+    public OneOf<AbstractSlotMachine<TResult>, Error> GetSlotMachine<TResult>() where TResult : IGamblingResult;
 }

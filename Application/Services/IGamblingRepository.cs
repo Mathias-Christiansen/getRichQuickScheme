@@ -1,14 +1,13 @@
 ﻿using Contracts.Common;
 using Contracts.Errors;
 using Domain.Entities;
+using Domain.GamblingMachines.Abstractions;
 using OneOf;
 
 namespace Application.Services;
 
 public interface IGamblingRepository
 {
-    public Task<OneOf<SpinResultsDto<TTileDto>, InsufficientFundsError, GamblingMachineNotFound>>
-        Gamble<TTileSet, TTileDto>(decimal amount, User user, CancellationToken cancellationToken)
-        where TTileSet : struct, Enum
-        where TTileDto : struct, Enum;
+    public Task<OneOf<TResult, InsufficientFundsError, GamblingMachineNotFound>>
+        Gamble<TResult>(decimal amount, User user, CancellationToken cancellationToken) where TResult : IGamblingResult;
 }

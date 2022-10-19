@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Domain.GamblingMachines.Abstractions;
+using Domain.GamblingMachines.OneArmedBandit;
 using Domain.GamblingMachines.TileSets;
 
 namespace Domain.GamblingMachines.ThreeLeggedBandit;
@@ -47,5 +48,10 @@ public class ThreeLeggedBanditResult : IGamblingResult, IReadOnlyList<ThreeLegge
     public float TotalMultiplier()
     {
         return _multipliers.Sum(x => x.Multiplier);
+    }
+
+    public IEnumerable<MultiplierAndOrigin> GetMultipliers()
+    {
+        return _multipliers;
     }
 }

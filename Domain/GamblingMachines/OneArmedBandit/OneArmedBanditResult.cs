@@ -50,4 +50,9 @@ public class OneArmedBanditResult : IGamblingResult, IReadOnlyList<OneArmedBandi
         return _multipliers.Sum(x => x.Multiplier);
     }
 
+    public IEnumerable<MultiplierAndOrigin> GetMultipliers()
+    {
+        return _multipliers;
+    }
+
 }

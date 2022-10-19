@@ -1,6 +1,6 @@
 ﻿namespace Contracts.Common.TileSetsDto;
 
-public enum ThreeArmedBanditTileSetDto
+public enum ThreeLeggedBanditTileSetDto
 {
     Bonus = 0,
     Ace = 1,
