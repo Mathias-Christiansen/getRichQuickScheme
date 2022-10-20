@@ -10,26 +10,16 @@ public class PlanetoidBaronessSlotMachine : AbstractSlotMachine<PlanetoidBarones
     
     //5x5 grid
     private const int ColumnSize = 5;
-    private static readonly PlanetoidBaronessTileSet[] _tiles = Enum.GetValues<PlanetoidBaronessTileSet>();
-    private static readonly Random Rand = new();
+    private const int MinWinCount = 3;
+    private static readonly PlanetoidBaronessTileSet[] Tiles = Enum.GetValues<PlanetoidBaronessTileSet>()
+        .Where(x => x != PlanetoidBaronessTileSet.Empty)
+        .ToArray();
 
-    private static PlanetoidBaronessTileSet[] GenerateInitialBoard()
-    {
-        var array = new PlanetoidBaronessTileSet[ColumnSize*ColumnSize];
-
-        for (int i = 0; i < ColumnSize*ColumnSize; i++)
-        {
-            var tile = _tiles[Rand.Next(1, _tiles.Length)];
-            array[i] = tile;
-        }
-
-        return array;
-    }
 
     public override PlanetoidBaronessResult Spin()
     {
-        var board = GenerateInitialBoard();
-        var result = new PlanetoidBaronessResult(Transform2d(board));
+        var board = GamblingMachineTools.GenerateInitialBoard(Tiles, ColumnSize*ColumnSize);
+        var result = new PlanetoidBaronessResult(GamblingMachineTools.Transform2d(board, ColumnSize, ColumnSize));
         var round = 0;
         
         while (true)
@@ -43,22 +33,7 @@ public class PlanetoidBaronessSlotMachine : AbstractSlotMachine<PlanetoidBarones
 
         return result;
     }
-
-    private static PlanetoidBaronessTileSet[][] Transform2d(PlanetoidBaronessTileSet[] board)
-    {
-        var output = new PlanetoidBaronessTileSet[ColumnSize][];
-        for (int i = 0; i < ColumnSize; i++)
-        {
-            output[i] = new PlanetoidBaronessTileSet[ColumnSize];
-            for (int j = 0; j < ColumnSize; j++)
-            {
-                output[i][j] = board[i * ColumnSize + j];
-            }
-        }
-
-        return output;
-    }
-
+    
     private static void ProgressBoard(PlanetoidBaronessTileSet[] board, ICollection<ISet<int>> winningIndex)
     {
         foreach (var index in winningIndex.SelectMany(x => x))
@@ -68,7 +43,7 @@ public class PlanetoidBaronessSlotMachine : AbstractSlotMachine<PlanetoidBarones
 
         foreach (var winSet in winningIndex)
         {
-            if (winSet.Count != 3) continue;
+            if (winSet.Count != MinWinCount) continue;
             var index = winSet.OrderBy(x => x).Skip(1).First();
             board[index] = PlanetoidBaronessTileSet.Wild;
         }
@@ -79,7 +54,7 @@ public class PlanetoidBaronessSlotMachine : AbstractSlotMachine<PlanetoidBarones
             var swindex = i;
             for (int j = i-ColumnSize; j >= 0; j-=ColumnSize)
             {
-                if (board[i] == PlanetoidBaronessTileSet.Empty) continue;
+                if (board[j] == PlanetoidBaronessTileSet.Empty) continue;
                 swindex = j;
                 break;
             }
@@ -106,7 +81,7 @@ public class PlanetoidBaronessSlotMachine : AbstractSlotMachine<PlanetoidBarones
                      .DistinctBy(y => y.tile))
         {
             var wins = CountMatches(tile, list);
-            if (wins.Count < 3) continue;
+            if (wins.Count < MinWinCount) continue;
             bigFatW.Add(wins);
         }
         
@@ -140,7 +115,7 @@ public class PlanetoidBaronessSlotMachine : AbstractSlotMachine<PlanetoidBarones
                 .FirstOrDefault(x => x != PlanetoidBaronessTileSet.Wild, PlanetoidBaronessTileSet.Wild);
             multipliers.Add(CalcMultiplier(winSet.Count, symbol) * round);
         }
-        result.AddState(new PlanetoidBaronessState(Transform2d(board), multipliers.Where(x => x > 0).ToArray()));
+        result.AddState(new PlanetoidBaronessState(GamblingMachineTools.Transform2d(board, ColumnSize, ColumnSize), multipliers.Where(x => x > 0).ToArray()));
     }
 
     private static float CalcMultiplier(int length, PlanetoidBaronessTileSet symbol)
@@ -181,7 +156,7 @@ public class PlanetoidBaronessSlotMachine : AbstractSlotMachine<PlanetoidBarones
         foreach (var (tile, index) in line)
         {
             if (MatchTiles(symbol, tile)) localResults.Add(index);
-            else if (localResults.Count >= 3) return localResults;
+            else if (localResults.Count >= MinWinCount) return localResults;
             else localResults.Clear();
         }
 
