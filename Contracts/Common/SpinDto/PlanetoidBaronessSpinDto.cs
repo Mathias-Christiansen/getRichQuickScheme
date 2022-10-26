@@ -1,6 +1,6 @@
 ﻿using Contracts.Common.TileSetsDto;
 
-namespace Contracts.Common;
+namespace Contracts.Common.SpinDto;
 
 public class PlanetoidBaronessSpinDto : SpinResultsDto<PlanetoidBaronessTileSetDto>
 {

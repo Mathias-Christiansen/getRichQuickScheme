@@ -1,4 +1,4 @@
-﻿namespace Contracts.Common;
+﻿namespace Contracts.Common.SpinDto;
 
 public class SpinResultsDto<TTileSet> 
     where TTileSet : struct, Enum 
