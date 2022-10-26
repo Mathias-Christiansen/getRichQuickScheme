@@ -53,4 +53,13 @@ public class GamblingController : ControllerBase
         var response = await _mediator.Send(query);
         return response.MatchResponse();
     }
+    
+    [HttpGet("ArrayDisarray/{amount:decimal}")]
+    [MapResponses(typeof(SpinPlanetoidBaronessQuery))]
+    public async Task<IActionResult> ArrayDisarray(decimal amount)
+    {
+        var query = new SpinVegetableFiestaQuery(amount);
+        var response = await _mediator.Send(query);
+        return response.MatchResponse();
+    }
 }

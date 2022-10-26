@@ -11,7 +11,7 @@ public class ArrayDisarraySlotMachine : AbstractSlotMachine<ArrayDisarrayResult>
         .Where(x => x != ArrayDisarrayTileSet.Empty)
         .ToArray();
 
-    private static readonly ArrayDisarrayTileSet[] FirePowerTiles = new[]
+    private static readonly ArrayDisarrayTileSet[] FirePowerTiles = new[] //TODO give new name
     {
         ArrayDisarrayTileSet.Blue, ArrayDisarrayTileSet.Green, ArrayDisarrayTileSet.Red, ArrayDisarrayTileSet.Queen,
         ArrayDisarrayTileSet.Beetle, ArrayDisarrayTileSet.Lion
@@ -21,7 +21,7 @@ public class ArrayDisarraySlotMachine : AbstractSlotMachine<ArrayDisarrayResult>
     
     public override ArrayDisarrayResult Spin()
     {
-        var board = GamblingMachineTools.GenerateInitialBoard(Tiles, ColumnSize*ColumnSize); //TODO fix
+        var board = GenerateInitialBoard();
         var result = new ArrayDisarrayResult(GamblingMachineTools.Transform2d(board, ColumnSize, ColumnSize));
         var powerSet = new HashSet<int>();
         
@@ -40,6 +40,47 @@ public class ArrayDisarraySlotMachine : AbstractSlotMachine<ArrayDisarrayResult>
         }
 
         return result;
+    }
+
+    private static ArrayDisarrayTileSet[] GenerateInitialBoard()
+    {
+        var board = new ArrayDisarrayTileSet[ColumnSize*ColumnSize];
+        
+        for (int i = 0; i < board.Length; i++)
+        {
+            var hull = GetHullDegree(i);
+            board[i] = hull switch
+            {
+                0 => ArrayDisarrayTileSet.Stone,
+                1 => GamblingMachineTools.Rand.NextDouble() < 0.9
+                    ? ArrayDisarrayTileSet.Stone 
+                    : FirePowerTiles[GamblingMachineTools.Rand.Next(0, FirePowerTiles.Length)],
+                2 => GamblingMachineTools.Rand.NextDouble() < 0.1
+                    ? ArrayDisarrayTileSet.Stone 
+                    : FirePowerTiles[GamblingMachineTools.Rand.Next(0, FirePowerTiles.Length)],
+                _ => FirePowerTiles[GamblingMachineTools.Rand.Next(0, FirePowerTiles.Length)]
+            };
+            if (board[i] == ArrayDisarrayTileSet.Stone && GamblingMachineTools.Rand.NextDouble() < (1f / 23f))
+                board[i] = GamblingMachineTools.Rand.NextDouble() switch
+                {
+                    < (1f / 3f) => ArrayDisarrayTileSet.Wild,
+                    < (2f / 3f) => ArrayDisarrayTileSet.StoneFire,
+                    _ => ArrayDisarrayTileSet.StoneLightning
+                };
+        }
+
+        return board;
+
+    }
+
+    private static int GetHullDegree(int index)
+    {
+        var up = index / ColumnSize;
+        var down = (ColumnSize * ColumnSize - 1 - index) / ColumnSize;
+        var left = -(ColumnSize * (index / ColumnSize) - index);
+        var right = (ColumnSize * ((index / ColumnSize) + 1) - 1) - index;
+
+        return Math.Min(Math.Min(up, down), Math.Min(left, right));
     }
 
     private static void ActivatePowers(ArrayDisarrayTileSet[] board, ICollection<int> powerSet)
